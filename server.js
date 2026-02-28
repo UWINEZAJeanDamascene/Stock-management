@@ -25,8 +25,37 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS
-app.use(cors());
+// CORS - Allow Vercel frontend and localhost for development
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    
+    // Allow Vercel deployments
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow specific domains
+    const allowedOrigins = [
+      'https://stock-management-frontend.vercel.app',
+      'https://your-frontend.vercel.app'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 // Body parser
 app.use(express.json());
