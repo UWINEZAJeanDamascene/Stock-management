@@ -44,7 +44,8 @@ const corsOptions = {
     // Allow specific domains
     const allowedOrigins = [
       'https://stock-management-frontend.vercel.app',
-      'https://your-frontend.vercel.app'
+      'https://your-frontend.vercel.app',
+      'https://stock-frontend-topaz-alpha.vercel.app'
     ];
     
     if (allowedOrigins.includes(origin)) {
