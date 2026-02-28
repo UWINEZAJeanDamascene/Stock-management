@@ -1,0 +1,82 @@
+const mongoose = require('mongoose');
+
+const stockMovementSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['in', 'out', 'adjustment'],
+    required: true
+  },
+  reason: {
+    type: String,
+    enum: [
+      'purchase', 'sale', 'return', 'damage', 'loss', 
+      'theft', 'expired', 'transfer', 'correction', 'initial_stock'
+    ],
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: [true, 'Please provide a quantity'],
+    min: [0.01, 'Quantity must be greater than 0']
+  },
+  previousStock: {
+    type: Number,
+    required: true
+  },
+  newStock: {
+    type: Number,
+    required: true
+  },
+  unitCost: {
+    type: Number,
+    min: 0
+  },
+  totalCost: {
+    type: Number,
+    min: 0
+  },
+  supplier: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Supplier'
+  },
+  batchNumber: String,
+  lotNumber: String,
+  expiryDate: Date,
+  referenceType: {
+    type: String,
+    enum: ['purchase', 'purchase_order', 'invoice', 'adjustment', 'return', 'other']
+  },
+  referenceNumber: String,
+  referenceDocument: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'referenceModel'
+  },
+  referenceModel: {
+    type: String,
+    enum: ['Purchase', 'Invoice', 'PurchaseOrder', 'StockAdjustment']
+  },
+  notes: String,
+  performedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  movementDate: {
+    type: Date,
+    default: Date.now
+  }
+}, {
+  timestamps: true
+});
+
+// Indexes for efficient querying
+stockMovementSchema.index({ product: 1, movementDate: -1 });
+stockMovementSchema.index({ supplier: 1, movementDate: -1 });
+stockMovementSchema.index({ type: 1, movementDate: -1 });
+
+module.exports = mongoose.model('StockMovement', stockMovementSchema);
